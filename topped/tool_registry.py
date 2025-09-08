@@ -1,7 +1,10 @@
 import os
 import subprocess
-from openff.toolkit import Molecule, Topology, ForceField
-from openff.interchange import Interchange
+try:
+    from openff.toolkit import Molecule, Topology, ForceField
+    from openff.interchange import Interchange
+except ImportError:
+    print("Warning: No openff found.")
 from . import MATCHPATH, PERLPATH, MATCHEXE
 from .cgenff_charmm2gmx_py3_nx2 import convert_match_charmm_to_gromacs
 

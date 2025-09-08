@@ -32,7 +32,8 @@ class TopolGenerator():
     def prepare(self, molecule, molname):
         # make temporary directory
         dirname = f"{self.toolname}_{molname}"
-        tmppath = tempfile.mkdtemp(dirname)
+        os.mkdir(dirname)
+        tmppath = dirname #tempfile.mkdtemp(dirname)
         pdb_dir = f"{tmppath}/input.pdb"
         # convert molecule to input format
         system = vermouth.System()
@@ -51,7 +52,15 @@ class TopolGenerator():
             out_str = lines[0]+f'\n{molname}\n' + '\n'.join(lines[2:])
             out_str = out_str.replace('UNL', molname)
             pdb_dir.write_text(out_str)
-        return tmppath, str(pdb_dir)
+        
+        # Resolve to absolute path
+        file_path = Path(pdb_dir)
+        full_path = file_path.resolve()
+
+        # Extract just the filename
+        filename = full_path.name
+
+        return tmppath, filename
 
     def post_process(self, tmppath):
         # clear the tmp dict       
@@ -65,7 +74,6 @@ class TopolGenerator():
         molname = molecule.molname
         tmppath, input_file = self.prepare(molecule, molname)
         os.chdir(tmppath)
-        print(input_file)
         self.top_tool(input_file, tmppath, molname, self.tool_options)
         os.chdir(cwd)
-        shutil.move(tmppath, cwd)
+        #shutil.move(tmppath, cwd)
