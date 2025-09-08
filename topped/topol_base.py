@@ -42,6 +42,7 @@ class TopolGenerator():
         if self.input_format == 'sdf':
             subprocess.run(['obabel', '-i', 'pdb', str(pdb_dir), '-o', 'sdf', '-O', f"{tmppath}/{molname}.sdf"])
             pdb_dir = f"{tmppath}/{molname}.sdf"
+            pdb_dir.write_text(f'{molname}\n' + '\n'.join(p.read_text().splitlines()[1:]))
         return tmppath, pdb_dir
 
     def post_process(self, tmppath):
