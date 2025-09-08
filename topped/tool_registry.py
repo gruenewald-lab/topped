@@ -8,7 +8,12 @@ from .cgenff_charmm2gmx_py3_nx2 import convert_match_charmm_to_gromacs
 def wrap_match(inpath, outpath, tag, options={}):
     base_options = {"forcefield": "top_all36_cgenff_new"}
     base_options.update(options)
-    env_dict = {"PerlChemistry": PERLPATH, "MATCH": MATCHPATH}
+    env_dict={}
+    if "PerlChemistry" in options and "MATCH" in options:
+        env_dict = options["PerlChemistry"]
+        env_dict = options["MATCH"]
+    else:
+        env_dict = {"PerlChemistry": PERLPATH, "MATCH": MATCHPATH}
     try:
         subprocess.run([MATCHEXE, "-forcefield", base_options["forcefield"], inpath], env=env_dict)
     except Exception as err:
