@@ -2,6 +2,7 @@ import os
 import subprocess
 import shutil
 import tempfile
+from pathlib import Path
 import vermouth
 from vermouth.pdb.pdb import write_pdb
 from vermouth.gmx.gro import write_gro
@@ -41,9 +42,16 @@ class TopolGenerator():
                              defer_writing=False)
         if self.input_format == 'sdf':
             subprocess.run(['obabel', '-i', 'pdb', str(pdb_dir), '-o', 'sdf', '-O', f"{tmppath}/{molname}.sdf"])
-            pdb_dir = f"{tmppath}/{molname}.sdf"
-            pdb_dir.write_text(f'{molname}\n' + '\n'.join(p.read_text().splitlines()[1:]))
-        return tmppath, pdb_dir
+            pdb_dir = Path(f"{tmppath}/{molname}.sdf")
+            pdb_dir.write_text(f'{molname}\n' + '\n'.join(pdb_dir.read_text().splitlines()[1:]))
+        if self.input_format == 'mol2':
+            subprocess.run(['obabel', '-i', 'pdb', str(pdb_dir), '-o', 'mol2', '-O', f"{tmppath}/{molname}.mol2"])
+            pdb_dir = Path(f"{tmppath}/{molname}.mol2")
+            lines = pdb_dir.read_text().splitlines()
+            out_str = lines[0]+f'\n{molname}\n' + '\n'.join(lines[2:])
+            out_str = out_str.replace('UNL', molname)
+            pdb_dir.write_text(out_str)
+        return tmppath, str(pdb_dir)
 
     def post_process(self, tmppath):
         # clear the tmp dict       
