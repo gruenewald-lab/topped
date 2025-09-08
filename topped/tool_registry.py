@@ -13,8 +13,8 @@ def wrap_match(inpath, outpath, tag, options={}):
     base_options.update(options)
     env_dict={}
     if "PerlChemistry" in options and "MATCH" in options:
-        env_dict = options["PerlChemistry"]
-        env_dict = options["MATCH"]
+        env_dict["PerlChemistry"] = options["PerlChemistry"]
+        env_dict["MATCH"] = options["MATCH"]
     else:
         env_dict = {"PerlChemistry": PERLPATH, "MATCH": MATCHPATH}
     try:
@@ -94,7 +94,7 @@ def wrap_openff(inpath, outpath, tag, options={}):
         openmm_topology = interchange.to_openmm_topology()
         openmm_positions = interchange.positions.to_openmm()
         # Output GROMACS files
-        gromacs_filename_base = f'{outpath}/open_ff_polymer'
+        gromacs_filename_base = f'open_ff_polymer'
         interchange.to_gromacs(gromacs_filename_base)
     except Exception as err:
         print(err)
@@ -123,7 +123,7 @@ def wrap_grappa_amber(inpath, outpath, tag, options={}, run_acpype=True):
     base_options = {"forcefield": "grappa-1.4.0"}
     base_options.update(options)
     try:
-        subprocess.run(["grappa_gmx", "-t", base_options["forcefield"], "-f", inpath, "-o", f"{outpath}/grappa.top"])
+        subprocess.run(["grappa_gmx", "-t", base_options["forcefield"], "-f", inpath, "-o", f"grappa.top"])
     except Exception as err:
         msg = "Excution of GRAPPA faild due to the following error."
         raise RuntimeError(msg) from err
